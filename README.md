@@ -4,10 +4,10 @@ Simple graphics library in Python, no dependencies required
 
 ## Images
 
-![combined](./images/combined.ppm)
+![combined](./images/combined.png)
 
-![circle](./images/circle.ppm)
+![circle](./images/circle.png)
 
-![triangle](./images/triangle.ppm)
+![triangle](./images/triangle.png)
 
-![lines](./images/lines.ppm)
+![lines](./images/lines.png)
