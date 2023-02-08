@@ -1,12 +1,17 @@
+import numpy as np
+from PIL import Image
+
+
 class PyGlCanvas:
-    def __init__(self, width, height):
+    def __init__(self, width, height, fill_colour=None):
         self._width = width
         self._height = height
-        self._pixels = [0] * width * height
+        self._pixels = np.empty(width * height * 3, dtype=int)
+        self._pixels = self._pixels.reshape((width * height, 3))
+        self.fill_colour(fill_colour or 0)
 
-    def fill(self, colour: int):
-        for i in range(len(self._pixels)):
-            self._pixels[i] = colour
+    def fill_colour(self, colour: int):
+        self._pixels[:] = hex_to_rgb(colour)
 
     def _line_low(
             self,
@@ -95,7 +100,7 @@ class PyGlCanvas:
             y: int):
         if -1 < x < self._width and -1 < y < self._height:
             # Bounds checking
-            self._pixels[y * self._width + x] = colour
+            self._pixels[y * self._width + x] = hex_to_rgb(colour)
             # Converting 2D coordinates to 1D coordinates
         return None
 
@@ -170,3 +175,16 @@ class PyGlCanvas:
                 # extracts the blue, green and red components from the colour
                 f.write(
                     " ".join([str(i) for i in col_as_bytes]) + " ")
+
+    def save_to_png(self, fpath: str):
+        img = Image.fromarray(
+            self._pixels.reshape(self._height,self._width,3).astype(
+                np.uint8)).convert("RGB")
+        img.save(fpath)
+
+
+def hex_to_rgb(col: int):
+    col_as_bytes = [(col >> (8 * 0)) & 0xFF,
+                    (col >> (8 * 1)) & 0xFF,
+                    (col >> (8 * 2)) & 0xFF]
+    return col_as_bytes

@@ -1,6 +1,13 @@
 # pygl
 
-Simple graphics library in Python, no dependencies required
+Simple graphics library in Python
+
+## Quick Start
+
+```console
+$ python -m pip install -r requirements.txt
+$ python example.py 
+```
 
 ## Images
 

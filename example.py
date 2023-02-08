@@ -1,87 +1,82 @@
 import pygl
 
 def lines_example():
-    WIDTH = 80
-    HEIGHT = 60
-    FG_COL = 0xFF000000
-    BG_COL = 0xFF0000FF
-    file_path = "images/lines.ppm"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT)
-    pixels.fill(BG_COL)
-    pixels.line(FG_COL, 13, 15, 13, 45)
-    pixels.line(FG_COL, 13, 45, 19, 45)
-    pixels.line(FG_COL, 25, 45, 31, 45)
-    pixels.line(FG_COL, 25, 15, 31, 15)
-    pixels.line(FG_COL, 28, 15, 28, 45)
-    pixels.line(FG_COL, 37, 15, 37, 45)
-    pixels.line(FG_COL, 37, 15, 43, 45)
-    pixels.line(FG_COL, 43, 15, 43, 45)
-    pixels.line(FG_COL, 49, 15, 49, 45)
-    pixels.line(FG_COL, 49, 15, 55, 15)
-    pixels.line(FG_COL, 49, 30, 55, 30)
-    pixels.line(FG_COL, 49, 45, 55, 45)
-    pixels.line(FG_COL, 61, 15, 67, 15)
-    pixels.line(FG_COL, 61, 15, 67, 45)
-    pixels.line(FG_COL, 61, 45, 67, 45)   
-    pixels.save_to_ppm(file_path)
+    WIDTH = 800
+    HEIGHT = 600
+    FG_COL = 0
+    BG_COL = 0xFF
+    file_path = "images/lines.png"
+    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels.line(FG_COL, 130, 150, 130, 450)
+    pixels.line(FG_COL, 130, 450, 190, 450)
+    pixels.line(FG_COL, 250, 450, 310, 450)
+    pixels.line(FG_COL, 250, 150, 310, 150)
+    pixels.line(FG_COL, 280, 150, 280, 450)
+    pixels.line(FG_COL, 370, 150, 370, 450)
+    pixels.line(FG_COL, 370, 150, 430, 450)
+    pixels.line(FG_COL, 430, 150, 430, 450)
+    pixels.line(FG_COL, 490, 150, 490, 450)
+    pixels.line(FG_COL, 490, 150, 550, 150)
+    pixels.line(FG_COL, 490, 300, 550, 300)
+    pixels.line(FG_COL, 490, 450, 550, 450)
+    pixels.line(FG_COL, 610, 150, 670, 150)
+    pixels.line(FG_COL, 610, 150, 670, 450)
+    pixels.line(FG_COL, 610, 450, 670, 450)   
+    pixels.save_to_png(file_path)
 
 
 def rect_example():
-    WIDTH = 80
-    HEIGHT = 60
-    FG_COL = 0xFF000000
-    BG_COL = 0xFF0000FF
-    file_path = "images/rect.ppm"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT)
-    pixels.fill(BG_COL)
-    pixels.fill_rect(FG_COL, 5, 5, 15, 15)
-    pixels.save_to_ppm(file_path)
+    WIDTH = 800
+    HEIGHT = 600
+    FG_COL = 0
+    BG_COL = 0xFF
+    file_path = "images/rect.png"
+    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels.fill_rect(FG_COL, 100, 100, 410, 330)
+    pixels.save_to_png(file_path)
 
 
 def triangle_example():
-    WIDTH = 80
-    HEIGHT = 60
-    FG_COL = 0xFF000000
-    BG_COL = 0xFF0000FF
-    file_path = "images/triangle.ppm"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT)
-    pixels.fill(BG_COL)
-    pixels.fill_triangle(FG_COL, 40, 5, 16, 38, 60, 46)
-    pixels.save_to_ppm(file_path)
+    WIDTH = 800
+    HEIGHT = 600
+    FG_COL = 0
+    BG_COL = 0xFF
+    file_path = "images/triangle.png"
+    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels.fill_triangle(FG_COL, 400, 50, 160, 380, 600, 460)
+    pixels.save_to_png(file_path)
 
 
 def circle_example():
-    WIDTH = 80
-    HEIGHT = 60
-    FG_COL = 0xFF000000
-    BG_COL = 0xFF0000FF
-    file_path = "images/circle.ppm"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT)
-    pixels.fill(BG_COL)
-    pixels.fill_circle(FG_COL, 20, 20, 10)
-    pixels.save_to_ppm(file_path)
+    WIDTH = 800
+    HEIGHT = 600
+    FG_COL = 0
+    BG_COL = 0xFF
+    file_path = "images/circle.png"
+    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels.fill_circle(FG_COL, 300, 300, 100)
+    pixels.save_to_png(file_path)
     
 
 def combined_example():
-    WIDTH = 96
-    HEIGHT = 60
-    BG_COL = 0xFF000000
-    FG_COL = 0xFFFFFFFF
-    file_path = "images/combined.ppm"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT)
-    pixels.fill(BG_COL)
-    pixels.fill_triangle(FG_COL, 3, 40, 21, 40, 12, 20)
-    pixels.fill_triangle(BG_COL, 8, 37, 16, 37, 12, 25)
-    pixels.fill_circle(FG_COL, 32, 30, 10)
-    pixels.fill_circle(BG_COL, 32, 30, 5)
-    pixels.fill_rect(FG_COL, 47, 20, 67, 40)
-    pixels.fill_triangle(BG_COL, 50, 20, 64, 20, 57, 27)
-    pixels.fill_triangle(BG_COL, 50, 40, 64, 40, 57, 33)
-    pixels.fill_triangle(BG_COL, 47, 23, 47, 37, 54, 30)
-    pixels.fill_triangle(BG_COL, 67, 23, 67, 37, 60, 30)
-    pixels.fill_rect(FG_COL, 72, 20, 92, 40)
-    pixels.fill_rect(BG_COL, 75, 23, 89, 37)
-    pixels.save_to_ppm(file_path)
+    WIDTH = 960
+    HEIGHT = 600
+    BG_COL = 0xFF
+    FG_COL = 0
+    file_path = "images/combined.png"
+    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels.fill_triangle(FG_COL, 30, 400, 210, 400, 120, 200)
+    pixels.fill_triangle(BG_COL, 80, 370, 160, 370, 120, 270)
+    pixels.fill_circle(FG_COL, 320, 300, 100)
+    pixels.fill_circle(BG_COL, 320, 300, 50)
+    pixels.fill_rect(FG_COL, 470, 200, 670, 400)
+    pixels.fill_triangle(BG_COL, 500, 200, 640, 200, 570, 270)
+    pixels.fill_triangle(BG_COL, 500, 400, 640, 400, 570, 330)
+    pixels.fill_triangle(BG_COL, 470, 230, 470, 370, 540, 300)
+    pixels.fill_triangle(BG_COL, 670, 230, 670, 370, 600, 300)
+    pixels.fill_rect(FG_COL, 720, 200, 920, 400)
+    pixels.fill_rect(BG_COL, 750, 230, 890, 370)
+    pixels.save_to_png(file_path)
 
 
 def main():
