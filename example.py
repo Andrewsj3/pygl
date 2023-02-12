@@ -1,10 +1,11 @@
 import pygl
 
+
 def lines_example():
     WIDTH = 800
     HEIGHT = 600
     FG_COL = 0
-    BG_COL = 0xFF
+    BG_COL = 0xFF0000
     file_path = "images/lines.png"
     pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
     pixels.line(FG_COL, 130, 150, 130, 450)
@@ -21,7 +22,7 @@ def lines_example():
     pixels.line(FG_COL, 490, 450, 550, 450)
     pixels.line(FG_COL, 610, 150, 670, 150)
     pixels.line(FG_COL, 610, 150, 670, 450)
-    pixels.line(FG_COL, 610, 450, 670, 450)   
+    pixels.line(FG_COL, 610, 450, 670, 450)
     pixels.save_to_png(file_path)
 
 
@@ -29,7 +30,7 @@ def rect_example():
     WIDTH = 800
     HEIGHT = 600
     FG_COL = 0
-    BG_COL = 0xFF
+    BG_COL = 0xFF0000
     file_path = "images/rect.png"
     pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
     pixels.fill_rect(FG_COL, 100, 100, 410, 330)
@@ -40,7 +41,7 @@ def triangle_example():
     WIDTH = 800
     HEIGHT = 600
     FG_COL = 0
-    BG_COL = 0xFF
+    BG_COL = 0xFF0000
     file_path = "images/triangle.png"
     pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
     pixels.fill_triangle(FG_COL, 400, 50, 160, 380, 600, 460)
@@ -51,20 +52,20 @@ def circle_example():
     WIDTH = 800
     HEIGHT = 600
     FG_COL = 0
-    BG_COL = 0xFF
+    BG_COL = 0xFF0000
     file_path = "images/circle.png"
     pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
-    pixels.fill_circle(FG_COL, 300, 300, 100)
+    pixels.fill_circle(FG_COL, 400, 300, 100)
     pixels.save_to_png(file_path)
-    
+
 
 def combined_example():
     WIDTH = 960
     HEIGHT = 600
-    BG_COL = 0xFF
-    FG_COL = 0
+    BG_COL = 0xFF0000FF
+    FG_COL = 0x000000FF
     file_path = "images/combined.png"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL, "RGBA")
     pixels.fill_triangle(FG_COL, 30, 400, 210, 400, 120, 200)
     pixels.fill_triangle(BG_COL, 80, 370, 160, 370, 120, 270)
     pixels.fill_circle(FG_COL, 320, 300, 100)
@@ -79,12 +80,25 @@ def combined_example():
     pixels.save_to_png(file_path)
 
 
+def transparent_example():
+    WIDTH = 800
+    HEIGHT = 600
+    BG_COL = 0xFFFFFF
+    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels.fill_circle(0x0000FF, 400, 250, 100)
+    pixels.fill_circle(0xFF0000, 350, 340, 100)
+    pixels.fill_circle(0x00FF00, 450, 340, 100)
+    file_path = "images/transparent.png"
+    pixels.save_to_png(file_path)
+
+
 def main():
     lines_example()
     triangle_example()
     rect_example()
     circle_example()
     combined_example()
+    transparent_example()
 
 
 if __name__ == "__main__":
