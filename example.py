@@ -7,7 +7,7 @@ def lines_example():
     FG_COL = 0
     BG_COL = 0xFF0000
     file_path = "images/lines.png"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels = pygl.PyGlCanvasRGB(WIDTH, HEIGHT, BG_COL)
     pixels.line(FG_COL, 130, 150, 130, 450)
     pixels.line(FG_COL, 130, 450, 190, 450)
     pixels.line(FG_COL, 250, 450, 310, 450)
@@ -32,7 +32,7 @@ def rect_example():
     FG_COL = 0
     BG_COL = 0xFF0000
     file_path = "images/rect.png"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels = pygl.PyGlCanvasRGB(WIDTH, HEIGHT, BG_COL)
     pixels.fill_rect(FG_COL, 100, 100, 410, 330)
     pixels.save_to_png(file_path)
 
@@ -43,7 +43,7 @@ def triangle_example():
     FG_COL = 0
     BG_COL = 0xFF0000
     file_path = "images/triangle.png"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels = pygl.PyGlCanvasRGB(WIDTH, HEIGHT, BG_COL)
     pixels.fill_triangle(FG_COL, 400, 50, 160, 380, 600, 460)
     pixels.save_to_png(file_path)
 
@@ -54,29 +54,29 @@ def circle_example():
     FG_COL = 0
     BG_COL = 0xFF0000
     file_path = "images/circle.png"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels = pygl.PyGlCanvasRGB(WIDTH, HEIGHT, BG_COL)
     pixels.fill_circle(FG_COL, 400, 300, 100)
     pixels.save_to_png(file_path)
 
 
 def combined_example():
-    WIDTH = 960
+    WIDTH = 800
     HEIGHT = 600
-    BG_COL = 0xFF0000FF
-    FG_COL = 0x000000FF
+    BG_COL = 0xFF0000
+    FG_COL = 0x000000
     file_path = "images/combined.png"
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL, "RGBA")
-    pixels.fill_triangle(FG_COL, 30, 400, 210, 400, 120, 200)
-    pixels.fill_triangle(BG_COL, 80, 370, 160, 370, 120, 270)
-    pixels.fill_circle(FG_COL, 320, 300, 100)
-    pixels.fill_circle(BG_COL, 320, 300, 50)
-    pixels.fill_rect(FG_COL, 470, 200, 670, 400)
-    pixels.fill_triangle(BG_COL, 500, 200, 640, 200, 570, 270)
-    pixels.fill_triangle(BG_COL, 500, 400, 640, 400, 570, 330)
-    pixels.fill_triangle(BG_COL, 470, 230, 470, 370, 540, 300)
-    pixels.fill_triangle(BG_COL, 670, 230, 670, 370, 600, 300)
-    pixels.fill_rect(FG_COL, 720, 200, 920, 400)
-    pixels.fill_rect(BG_COL, 750, 230, 890, 370)
+    pixels = pygl.PyGlCanvasRGB(WIDTH, HEIGHT, BG_COL)
+    pixels.fill_triangle(FG_COL, 10, 400, 190, 400, 100, 200)
+    pixels.fill_triangle(BG_COL, 60, 370, 140, 370, 100, 270)
+    pixels.fill_rect(FG_COL, 360, 200, 560, 400)
+    pixels.fill_triangle(BG_COL, 390, 200, 530, 200, 460, 270)
+    pixels.fill_triangle(BG_COL, 390, 400, 530, 400, 460, 330)
+    pixels.fill_triangle(BG_COL, 360, 230, 360, 370, 430, 300)
+    pixels.fill_triangle(BG_COL, 560, 230, 560, 370, 490, 300)
+    pixels.fill_circle(FG_COL, 270, 300, 100)
+    pixels.fill_circle(BG_COL, 270, 300, 50)
+    pixels.fill_rect(FG_COL, 585, 200, 785, 400)
+    pixels.fill_rect(BG_COL, 615, 230, 755, 370)
     pixels.save_to_png(file_path)
 
 
@@ -84,7 +84,8 @@ def transparent_example():
     WIDTH = 800
     HEIGHT = 600
     BG_COL = 0xFFFFFF
-    pixels = pygl.PyGlCanvas(WIDTH, HEIGHT, BG_COL)
+    pixels = pygl.PyGlCanvasRGB(WIDTH, HEIGHT, BG_COL)
+    pixels.enable_blending()
     pixels.fill_circle(0x0000FF, 400, 250, 100)
     pixels.fill_circle(0xFF0000, 350, 340, 100)
     pixels.fill_circle(0x00FF00, 450, 340, 100)
