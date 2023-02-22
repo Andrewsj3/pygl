@@ -92,14 +92,28 @@ def transparent_example():
     file_path = "images/transparent.png"
     pixels.save_to_png(file_path)
 
+def checkers_example():
+    WIDTH = 800
+    HEIGHT = 600
+    FG_COL = 0xFF
+    STRIDE = 40
+    offset = STRIDE
+    pixels = pygl.PyGlCanvasGS(WIDTH, HEIGHT)
+    for y in range(0, HEIGHT, STRIDE):
+        offset = 0 if offset == STRIDE else STRIDE
+        for x in range(offset, WIDTH, STRIDE * 2):
+            pixels.fill_rect(FG_COL, x, y, x+39, y+39)
+    pixels.save_to_png("images/checkers.png")
+
 
 def main():
-    lines_example()
-    triangle_example()
-    rect_example()
-    circle_example()
-    combined_example()
-    transparent_example()
+    #lines_example()
+    #triangle_example()
+    #rect_example()
+    #circle_example()
+    #combined_example()
+    #transparent_example()
+    checkers_example()
 
 
 if __name__ == "__main__":

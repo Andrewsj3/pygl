@@ -15,8 +15,7 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
     @abstractmethod
     def set_pixel(self, colour: int, x: int, y: int):
         if -1 < x < self._width and -1 < y < self._height:
-            self._pixels[y * self._width + x] = colour
-        return None
+            self._pixels[y][x] = colour
 
     @abstractmethod
     def fill_colour(self, colour: int):
@@ -24,11 +23,7 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
 
     @abstractmethod
     def save_to_png(self, fpath: str):
-        img = Image.fromarray(
-            self._pixels.reshape(
-                self._height, self._width, len(
-                    self._mode)), self._mode)
-
+        img = Image.fromarray(self._pixels, self._mode)
         img.save(fpath)
 
     def fill_triangle(
@@ -56,7 +51,7 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
                 s1 = ((y - y1) * dx12 / dy12) + x1 if dy12 != 0 else x1
                 s2 = ((y - y1) * dx13 / dy13) + x1 if dy13 != 0 else x1
                 s1, s2 = map(int, sorted([s1, s2]))
-                self._line_horiz(colour, s1, s2 + 1, y)
+                self._line_horiz(colour, s1, s2, y)
 
         dx32 = x2 - x3
         dy32 = y2 - y3
@@ -68,7 +63,7 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
                 s1 = ((y - y3) * dx32 / dy32) + x3 if dy32 != 0 else x3
                 s2 = ((y - y3) * dx31 / dy31) + x3 if dy31 != 0 else x3
                 s1, s2 = map(int, sorted([s1, s2]))
-                self._line_horiz(colour, s1, s2 + 1, y)
+                self._line_horiz(colour, s1, s2, y)
 
     def fill_circle(
             self,
@@ -140,10 +135,14 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
 
     @abstractmethod
     def _line_horiz(self, colour, x1, x2, y):
-        idx1 = y * self._width + x1
-        idx2 = y * self._width + x2
         colour = hex_to_rgb(colour)
-        self._pixels[idx1:idx2] = colour
+        self._pixels[y][x1:x2] = colour
+
+    @abstractmethod
+    def _line_vert(self, colour, y1, y2, x):
+        colour = hex_to_rgb(colour)
+        y1, y2 = sorted((y1, y2))
+        self._pixels[y1:y2][x] = colour
 
     def line(
             self,
@@ -154,6 +153,8 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
             y2: int):
         if y1 == y2:
             self._line_horiz(colour, x1, x2, y1)
+        if x1 == x2:
+            self._line_vert(colour, y1, y2, x1)
         if abs(y2 - y1) < abs(x2 - x1):
             if x1 > x2:
                 self._line_low(colour, x2, y2, x1, y1)
@@ -174,17 +175,19 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
             y2: int):
         x1, x2 = sorted([x2, x1])
         y1, y2 = sorted([y2, y1])
-        for y in range(y1, y2 + 1):
-            self.line(colour, x1, y, x2, y)
-            # Treating rectangles as many lines stacked on each other
+        if x2 - x1 > y2 - y1:
+            for y in range(y1, y2 + 1):
+                self._line_horiz(colour, x1, x2, y)
+                # Treating rectangles as many lines stacked on each other
+        else:
+            for x in range(x1, x2 + 1):
+                self._line_vert(colour, y1, y2, x)
 
 
 class PyGlCanvasRGB(AbstractPyGlCanvas):
-    # TODO: Split this into separate classes for rgb, rgba, grayscale
     def __init__(self, width, height, fill_colour=None):
         super().__init__(width, height)
-        self._pixels = np.empty(width * height * 3, dtype=np.uint8)
-        self._pixels = self._pixels.reshape((width * height, 3))
+        self._pixels = np.empty((height, width, 3), dtype=np.uint8)
         self._fill_colour = fill_colour
         self._blending = False
         # Overrides previous pixel value by default
@@ -198,10 +201,13 @@ class PyGlCanvasRGB(AbstractPyGlCanvas):
         return self._blending
 
     @blending.setter
-    def blending(self, b):
-        raise AttributeError(
-            "Attribute `_blending` cannot be set manually,"
-            " use `enable_blending` and `disable_blending` instead")
+    def blending(self, mode: bool):
+        if mode in (True, False):
+            self._blending = mode
+        else:
+            raise AttributeError(
+                "Attribute `_blending` cannot be set manually,"
+                " use `enable_blending` and `disable_blending` instead")
 
     def enable_blending(self):
         self._blending = True
@@ -210,23 +216,33 @@ class PyGlCanvasRGB(AbstractPyGlCanvas):
         self._blending = False
 
     def _line_horiz(self, colour: int, x1: int, x2: int, y: int):
-        idx1 = y * self._width + x1
-        idx2 = y * self._width + x2
         colour = hex_to_rgb(colour)
-        self._pixels[idx1:idx2] = colour
+        y = clamp(y, 0, self._height - 1)
+        x1 = clamp(x1, 0, self._width - 1)
+        x2 = clamp(x2, 0, self._width - 1)
+        self._pixels[y, x1:x2 + 1] = colour
+
+    def _line_vert(self, colour: int, y1: int, y2: int, x: int):
+        colour = hex_to_rgb(colour)
+        x = clamp(x, 0, self._width - 1)
+        y1 = clamp(y1, 0, self._height - 1)
+        y2 = clamp(y2, 0, self._height - 1)
+        self._pixels[y1:y2 + 1, x] = colour
 
     @property
     def blend_mode(self):
         return self._blend_mode
 
     @blend_mode.setter
-    def blend_mode(self, mode):
+    def blend_mode(self, mode: str):
         if mode not in ("combine", "blend"):
             raise PyGlError(
                 f"Invalid option `{mode}`:"
                 " must be `combine` or `blend`")
+        else:
+            self._blend_mode = mode
 
-    def fill_colour(self, colour):
+    def fill_colour(self, colour: int):
         self._pixels[:] = hex_to_rgb(colour)
 
     def set_pixel(
@@ -236,20 +252,15 @@ class PyGlCanvasRGB(AbstractPyGlCanvas):
             y: int):
         if -1 < x < self._width and -1 < y < self._height:
             # Bounds checking
-            col_1 = self._pixels[y * self._width + x]
+            col_1 = self._pixels[y][x]
             col_2 = hex_to_rgb(colour)
             if self._blending:
-                self._pixels[y * self._width + x] = self.mix_cols(col_1, col_2)
+                self._pixels[y][x] = self.mix_cols(col_1, col_2)
             else:
-                self._pixels[y * self._width + x] = col_2
-            # Converting 2D coordinates to 1D coordinates
-        return None
+                self._pixels[y][x] = col_2
 
     def save_to_png(self, fpath: str):
-        img = Image.fromarray(
-            self._pixels.reshape(
-                self._height, self._width, 3), "RGB")
-
+        img = Image.fromarray(self._pixels, "RGB")
         img.save(fpath)
 
     def mix_cols(self, orig: np.array, new: np.array):
@@ -275,18 +286,16 @@ class PyGlCanvasRGB(AbstractPyGlCanvas):
 class PyGlCanvasRGBA(AbstractPyGlCanvas):
     def __init__(self, width, height, fill_colour=None):
         super().__init__(width, height)
-        self._pixels = np.empty(width * height * 4, dtype=np.uint8)
-        self._pixels = self._pixels.reshape((width * height, 4))
+        self._pixels = np.empty((height, width, 4), dtype=np.uint8)
         self._fill_colour = fill_colour
         self._bg_blending = False
-        # Overrides previous pixel value by default
-        self.fill_colour(fill_colour or 0x000000FF)
+        if fill_colour is None:
+            self.fill_colour(0x000000FF)
+        else:
+            self.fill_colour(fill_colour)
 
     def save_to_png(self, fpath: str):
-        img = Image.fromarray(
-            self._pixels.reshape(
-                self._height, self._width, 4), "RGBA")
-
+        img = Image.fromarray(self._pixels, "RGBA")
         img.save(fpath)
 
     def fill_colour(self, colour: int):
@@ -309,11 +318,9 @@ class PyGlCanvasRGBA(AbstractPyGlCanvas):
             y: int):
         if -1 < x < self._width and -1 < y < self._height:
             # Bounds checking
-            col_1 = self._pixels[y * self._width + x]
+            col_1 = self._pixels[y][x]
             col_2 = hex_to_rgba(colour)
-            self._pixels[y * self._width + x] = self.mix_cols(col_1, col_2)
-            # Converting 2D coordinates to 1D coordinates
-        return None
+            self._pixels[y][x] = self.mix_cols(col_1, col_2)
 
     def mix_cols(self, orig: np.array, new: np.array):
         r1, g1, b1, a1 = orig
@@ -331,10 +338,18 @@ class PyGlCanvasRGBA(AbstractPyGlCanvas):
         return [r1, g1, b1, a1]
 
     def _line_horiz(self, colour: int, x1: int, x2: int, y: int):
-        idx1 = y * self._width + x1
-        idx2 = y * self._width + x2
         colour = hex_to_rgba(colour)
-        self._pixels[idx1:idx2] = colour
+        y = clamp(y, 0, self._height - 1)
+        x1 = clamp(x1, 0, self._width - 1)
+        x2 = clamp(x2, 0, self._width - 1)
+        self._pixels[y, x1:x2 + 1] = colour
+
+    def _line_vert(self, colour: int, y1: int, y2: int, x: int):
+        colour = hex_to_rgba(colour)
+        x = clamp(x, 0, self._height - 1)
+        y1 = clamp(y1, 0, self._width - 1)
+        y2 = clamp(y2, 0, self._width - 1)
+        self._pixels[y1:y2 + 1, x] = colour
 
     @property
     def blending(self):
@@ -353,8 +368,46 @@ class PyGlCanvasRGBA(AbstractPyGlCanvas):
         self._bg_blending = False
 
 
-def hex_to_rgb(col: int):
+class PyGlCanvasGS(AbstractPyGlCanvas):
+    def __init__(self, width, height, fill_colour=None):
+        super().__init__(width, height)
+        self._pixels = np.empty((height, width), dtype=np.uint8)
+        self.fill_colour(fill_colour or 0x00)
+
+    def set_pixel(self, colour: int, x: int, y: int):
+        if -1 < x < self._width and -1 < y < self._height:
+            self._pixels[y][x] = colour
+
+    def _line_horiz(self, colour: int, x1: int, x2: int, y: int):
+        y = clamp(y, 0, self._height - 1)
+        x1 = clamp(x1, 0, self._width - 1)
+        x2 = clamp(x2, 0, self._width - 1)
+        x1, x2 = sorted([x1, x2])
+        self._pixels[y, x1:x2 + 1] = colour
+
+    def _line_vert(self, colour: int, y1: int, y2: int, x: int):
+        x = clamp(x, 0, self._width - 1)
+        y1 = clamp(y1, 0, self._height - 1)
+        y2 = clamp(y2, 0, self._height - 1)
+        y1, y2 = sorted([y1, y2])
+        self._pixels[y1:y2 + 1, x] = colour
+
+    def save_to_png(self, fpath: str):
+        img = Image.fromarray(self._pixels)
+        img.save(fpath)
+
+    def fill_colour(self, colour: int):
+        self._pixels[:] = colour
+
+
+def hex_to_rgb(col: int | str):
     from sys import byteorder
+    if isinstance(col, str):
+        try:
+            col = int(col.replace("#", ""), base=16)
+        except ValueError:
+            raise PyGlError(f"String {col} is not a valid hex code")
+
     col_as_bytes = [(col >> (8 * 0)) & 0xFF,
                     (col >> (8 * 1)) & 0xFF,
                     (col >> (8 * 2)) & 0xFF]
@@ -364,8 +417,14 @@ def hex_to_rgb(col: int):
     return col_as_bytes
 
 
-def hex_to_rgba(col: int):
+def hex_to_rgba(col: int | str):
     from sys import byteorder
+    if isinstance(col, str):
+        try:
+            col = int(col.replace("#", ""), base=16)
+        except ValueError:
+            raise PyGlError(f"String {col} is not a valid hex code")
+
     col_as_bytes = [(col >> (8 * 0)) & 0xFF,
                     (col >> (8 * 1)) & 0xFF,
                     (col >> (8 * 2)) & 0xFF,
@@ -373,3 +432,7 @@ def hex_to_rgba(col: int):
     if byteorder == "little":
         col_as_bytes = col_as_bytes[::-1]
     return col_as_bytes
+
+
+def clamp(num: int, low: int, high: int):
+    return min(max(num, low), high)

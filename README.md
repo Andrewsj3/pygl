@@ -16,7 +16,7 @@ pygl is not on PyPi yet, but for now, you can copy `pygl.py` into your project
 ## About
 
 pygl is a graphics library that can draw primitive shapes and save them to a png file.
-It currently supports RGB and RGBA colour formats, and allows for transparency and blending.
+It currently supports RGB, RGBA, and grayscale colour formats, and allows for transparency.
 
 ## Images
 
@@ -26,4 +26,4 @@ It currently supports RGB and RGBA colour formats, and allows for transparency a
 
 ![triangle](./images/triangle.png)
 
-![lines](./images/lines.png)
+![checkers](./images/checkers.png)
