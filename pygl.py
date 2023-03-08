@@ -26,6 +26,18 @@ class AbstractPyGlCanvas(metaclass=ABCMeta):
         img = Image.fromarray(self._pixels, self._mode)
         img.save(fpath)
 
+    def flip_horiz(self):
+        self._pixels = np.fliplr(self._pixels)
+
+    def flip_vert(self):
+        self._pixels = np.flipud(self._pixels)
+
+    def right_90(self, rotations=1):
+        self._pixels = np.rot90(self._pixels, rotations, (1, 0))
+
+    def left_90(self, rotations=1):
+        self._pixels = np.rot90(self._pixels, rotations)
+
     def fill_triangle(
             self,
             colour: int,
@@ -260,6 +272,13 @@ class PyGlCanvasRGB(AbstractPyGlCanvas):
                 self._pixels[y][x] = col_2
 
     def save_to_png(self, fpath: str):
+        import os
+        dirname = os.path.dirname(fpath)
+        if not os.path.exists(dirname):
+            if '~' in dirname:
+                dirname = os.path.expanduser(dirname)
+                fpath = os.path.expanduser(fpath)
+            os.makedirs(dirname, exist_ok=True)
         img = Image.fromarray(self._pixels, "RGB")
         img.save(fpath)
 
