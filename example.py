@@ -107,13 +107,19 @@ def checkers_example():
 
 
 def main():
-    #lines_example()
-    #triangle_example()
-    #rect_example()
-    #circle_example()
-    #combined_example()
-    #transparent_example()
-    checkers_example()
+    import cProfile
+    import pstats
+    with cProfile.Profile() as pr:
+        lines_example()
+        triangle_example()
+        rect_example()
+        circle_example()
+        combined_example()
+    #    transparent_example()
+        checkers_example()
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.dump_stats("stats.prof")
 
 
 if __name__ == "__main__":
